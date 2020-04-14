@@ -23,32 +23,31 @@ void process_image_callback(const sensor_msgs::Image img)
 {
 
     int white_pixel = 255;
-    float left  = img.width; 
-    float rigth = img.step;
+    int left  = img.step / 3; 
+    int column = 0;
 
-            ROS_INFO_STREAM("left: " + std::to_string(left) + " rigth: " + std::to_string(rigth));
+    // ROS_INFO_STREAM("left: " + std::to_string(left) + " rigth: " + std::to_string(rigth));
 
     // Loop through each pixel in the image and check if there's a bright white one
     for (int i = 0; i < img.height * img.step; i++) {
         if (img.data[i] == white_pixel && img.data[i+1] == white_pixel && img.data[i+2] == white_pixel) {
-
-            ROS_INFO_STREAM("white found");
-
-        /*    // Identify if falls in the left side of the image  
-            if (img.data[i] <= left) {
-            drive_robot (0.2 , 0.5); // Call the drive_bot function and pass velocities to it
-            //break;
+            column = i%img.step; // The column location of the white point
+            // ROS_INFO_STREAM("white found");
+            // Identify if falls in the left side of the image  
+            if (column <= left) {
+               drive_robot (0.2 , 0.5); // Call the drive_bot function and pass velocities to it
+               break;
             }
             // Identify if falls in the right side of the image  
-            else if (img.data[i] >= rigth) {
-            drive_robot (0.2 , -0.5); // Call the drive_bot function and pass velocities to it
-            //break;
+            else if (column >= (2 * left)) {
+               drive_robot (0.2 , -0.5); // Call the drive_bot function and pass velocities to it
+               break;
             }
             // Else falls in the mid side of the image  
-            else if (img.data[i] > left && img.data[i] < rigth) { // Call the drive_bot function and pass velocities to it*/
-            drive_robot (0.5 , 0.0);
-            //break;
-            //}
+            else if (column > left && column < (2 * left)) { 
+               drive_robot (0.5 , 0.0); // Call the drive_bot function and pass velocities to it
+               break;
+            }
             break;
         }
     }
@@ -74,3 +73,5 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+
