@@ -12,6 +12,10 @@ void drive_robot(float lin_x, float ang_z)
     ball_chaser::DriveToTarget srv;
     srv.request.linear_x = lin_x;
     srv.request.angular_z = ang_z;    
+
+    // Call the drive_robot service and pass the requested linear_x and angular_z
+    if (!client.call(srv))
+        ROS_ERROR("Failed to call service drive_robot");
 }
 
 // This callback function continuously executes and reads the image data
@@ -19,27 +23,32 @@ void process_image_callback(const sensor_msgs::Image img)
 {
 
     int white_pixel = 255;
-    int left = img.step / 3; 
-    int rigth = 2 * img.step / 3;
+    float left  = img.width; 
+    float rigth = img.step;
+
+            ROS_INFO_STREAM("left: " + std::to_string(left) + " rigth: " + std::to_string(rigth));
 
     // Loop through each pixel in the image and check if there's a bright white one
     for (int i = 0; i < img.height * img.step; i++) {
-        if (img.data[i] == white_pixel) {
-            // Identify if falls in the left side of the image  
-            if (img.data[i] < left) {
-            drive_robot (0.0 , 0.5); // Call the drive_bot function and pass velocities to it
-            break;
+        if (img.data[i] == white_pixel && img.data[i+1] == white_pixel && img.data[i+2] == white_pixel) {
+
+            ROS_INFO_STREAM("white found");
+
+        /*    // Identify if falls in the left side of the image  
+            if (img.data[i] <= left) {
+            drive_robot (0.2 , 0.5); // Call the drive_bot function and pass velocities to it
+            //break;
             }
             // Identify if falls in the right side of the image  
-            else if (img.data[i] > rigth) {
-            drive_robot (0.0 , -0.5); // Call the drive_bot function and pass velocities to it
-            break;
+            else if (img.data[i] >= rigth) {
+            drive_robot (0.2 , -0.5); // Call the drive_bot function and pass velocities to it
+            //break;
             }
             // Else falls in the mid side of the image  
-            else if (img.data[i] < left) { // Call the drive_bot function and pass velocities to it
+            else if (img.data[i] > left && img.data[i] < rigth) { // Call the drive_bot function and pass velocities to it*/
             drive_robot (0.5 , 0.0);
-            break;
-            }
+            //break;
+            //}
             break;
         }
     }
