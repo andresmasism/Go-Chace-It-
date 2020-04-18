@@ -35,12 +35,12 @@ void process_image_callback(const sensor_msgs::Image img)
             // ROS_INFO_STREAM("white found");
             // Identify if falls in the left side of the image  
             if (column <= left) {
-               drive_robot (0.2 , 0.5); // Call the drive_bot function and pass velocities to it
+               drive_robot (0.0 , 0.5); // Call the drive_bot function and pass velocities to it
                break;
             }
             // Identify if falls in the right side of the image  
             else if (column >= (2 * left)) {
-               drive_robot (0.2 , -0.5); // Call the drive_bot function and pass velocities to it
+               drive_robot (0.0 , -0.5); // Call the drive_bot function and pass velocities to it
                break;
             }
             // Else falls in the mid side of the image  
