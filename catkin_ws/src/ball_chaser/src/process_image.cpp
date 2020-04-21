@@ -25,6 +25,7 @@ void process_image_callback(const sensor_msgs::Image img)
     int white_pixel = 255;
     int left  = img.step / 3; 
     int column = 0;
+    int white_found = 0;
 
     // ROS_INFO_STREAM("left: " + std::to_string(left) + " rigth: " + std::to_string(rigth));
 
@@ -33,6 +34,7 @@ void process_image_callback(const sensor_msgs::Image img)
         if (img.data[i] == white_pixel && img.data[i+1] == white_pixel && img.data[i+2] == white_pixel) {
             column = i%img.step; // The column location of the white point
             // ROS_INFO_STREAM("white found");
+            white_found = 1;
             // Identify if falls in the left side of the image  
             if (column <= left) {
                drive_robot (0.0 , 0.5); // Call the drive_bot function and pass velocities to it
@@ -48,12 +50,19 @@ void process_image_callback(const sensor_msgs::Image img)
                drive_robot (0.5 , 0.0); // Call the drive_bot function and pass velocities to it
                break;
             }
-            break;
+            //break;
         }
     }
-    // Request a stop when there's no white ball seen by the camera
-    drive_robot (0.0 , 0.0); 
-
+    
+    if (white_found == 0) {
+       // Request a stop when there's no white ball seen by the camera
+       drive_robot (0.0 , 0.0); 
+    }
+   
+    else {
+       // Reset white_found
+       white_found = 0;  
+    }
 }
 
 int main(int argc, char** argv)
